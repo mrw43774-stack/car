@@ -1,0 +1,2536 @@
+
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ultimate Car Racing</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #050505;
+            color: white;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(#4fa3d1, #bde7ff);
+        }
+
+        /* =========================
+           MENU
+        ========================= */
+
+        #menu {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background:
+                linear-gradient(
+                    rgba(0,0,0,.80),
+                    rgba(0,0,0,.94)
+                );
+        }
+
+        .menuBox {
+            width: 480px;
+            max-width: 94%;
+
+            padding: 30px;
+
+            background: #171717;
+
+            border: 2px solid #444;
+            border-radius: 20px;
+
+            text-align: center;
+
+            box-shadow:
+                0 0 40px rgba(0,0,0,.8);
+        }
+
+        .menuBox h1 {
+            font-size: 38px;
+
+            color: #ffd000;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .sectionTitle {
+            font-size: 17px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+
+        /* =========================
+           COLORS
+        ========================= */
+
+        .cars {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 10px;
+        }
+
+        .carChoice {
+            height: 75px;
+
+            border-radius: 12px;
+
+            border: 3px solid transparent;
+
+            cursor: pointer;
+
+            position: relative;
+
+            transition: .2s;
+        }
+
+        .carChoice:hover {
+            transform: scale(1.04);
+        }
+
+        .carChoice.selected {
+            border-color: white;
+
+            box-shadow:
+                0 0 15px white;
+        }
+
+        .red {
+            background: #e53935;
+        }
+
+        .blue {
+            background: #1976d2;
+        }
+
+        .black {
+            background: #111;
+
+            border-color: #555;
+        }
+
+        .yellow {
+            background: #fbc02d;
+        }
+
+        .carName {
+            position: absolute;
+
+            bottom: 5px;
+
+            width: 100%;
+
+            font-size: 13px;
+
+            text-shadow:
+                0 1px 4px black;
+        }
+
+        /* =========================
+           SELECT
+        ========================= */
+
+        select {
+            width: 100%;
+
+            padding: 12px;
+
+            border-radius: 9px;
+
+            background: #252525;
+
+            color: white;
+
+            border: 1px solid #555;
+
+            font-size: 16px;
+        }
+
+        /* =========================
+           START
+        ========================= */
+
+        #startButton {
+            width: 100%;
+
+            margin-top: 22px;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffb300,
+                    #ff6f00
+                );
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        #startButton:hover {
+            filter: brightness(1.15);
+        }
+
+        /* =========================
+           ROAD
+        ========================= */
+
+        #road {
+            position: absolute;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 500px;
+
+            height: 100%;
+
+            background: #303030;
+
+            border-left:
+                8px solid white;
+
+            border-right:
+                8px solid white;
+
+            overflow: hidden;
+        }
+
+        .roadSide {
+            position: absolute;
+
+            width: 28px;
+
+            height: 100%;
+
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    #d32f2f 0px,
+                    #d32f2f 40px,
+                    white 40px,
+                    white 80px
+                );
+        }
+
+        .roadSide.left {
+            left: 0;
+        }
+
+        .roadSide.right {
+            right: 0;
+        }
+
+        .laneLine {
+            position: absolute;
+
+            width: 7px;
+
+            height: 80px;
+
+            background: white;
+
+            left: 33.33%;
+
+            transform:
+                translateX(-50%);
+        }
+
+        .laneLine.right {
+            left: 66.66%;
+        }
+
+        /* =========================
+           PLAYER
+        ========================= */
+
+        #player {
+            position: absolute;
+
+            width: 72px;
+
+            height: 125px;
+
+            bottom: 55px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            border-radius:
+                18px 18px 10px 10px;
+
+            z-index: 10;
+
+            box-shadow:
+                0 8px 20px rgba(0,0,0,.7);
+
+            transition:
+                left .04s;
+        }
+
+        .window {
+            position: absolute;
+
+            left: 12px;
+
+            top: 18px;
+
+            width: 48px;
+
+            height: 38px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #bdefff,
+                    #345
+                );
+
+            border:
+                3px solid
+                rgba(255,255,255,.5);
+        }
+
+        .window2 {
+            position: absolute;
+
+            left: 12px;
+
+            top: 65px;
+
+            width: 48px;
+
+            height: 22px;
+
+            border-radius: 5px;
+
+            background: #111;
+        }
+
+        .wheel {
+            position: absolute;
+
+            width: 12px;
+
+            height: 28px;
+
+            background: #050505;
+
+            border-radius: 5px;
+        }
+
+        .wheel.left {
+            left: -8px;
+        }
+
+        .wheel.right {
+            right: -8px;
+        }
+
+        .wheel.top {
+            top: 25px;
+        }
+
+        .wheel.bottom {
+            bottom: 25px;
+        }
+
+        .light {
+            position: absolute;
+
+            width: 14px;
+
+            height: 9px;
+
+            background: white;
+
+            border-radius: 3px;
+
+            top: 5px;
+        }
+
+        .light.left {
+            left: 10px;
+        }
+
+        .light.right {
+            right: 10px;
+        }
+
+        .backLight {
+            position: absolute;
+
+            width: 12px;
+
+            height: 8px;
+
+            background: red;
+
+            bottom: 5px;
+        }
+
+        .backLight.left {
+            left: 10px;
+        }
+
+        .backLight.right {
+            right: 10px;
+        }
+
+        /* =========================
+           ENEMY
+        ========================= */
+
+        .enemy {
+            position: absolute;
+
+            width: 68px;
+
+            height: 118px;
+
+            border-radius:
+                16px 16px 9px 9px;
+
+            z-index: 8;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0,0,0,.7);
+        }
+
+        /* =========================
+           HUD
+        ========================= */
+
+        #hud {
+            position: absolute;
+
+            top: 15px;
+
+            left: 15px;
+
+            right: 15px;
+
+            z-index: 20;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            gap: 8px;
+
+            pointer-events: none;
+        }
+
+        .hudBox {
+            background:
+                rgba(0,0,0,.75);
+
+            border:
+                1px solid #555;
+
+            border-radius: 10px;
+
+            padding: 9px 12px;
+
+            min-width: 105px;
+
+            text-align: center;
+        }
+
+        .hudBox span {
+            display: block;
+
+            font-size: 11px;
+
+            color: #aaa;
+
+            margin-bottom: 3px;
+        }
+
+        .hudBox strong {
+            font-size: 19px;
+        }
+
+        #speedValue {
+            color: #00e5ff;
+        }
+
+        #scoreValue {
+            color: #ffd000;
+        }
+
+        #levelValue {
+            color: #ff7b00;
+        }
+
+        #livesValue {
+            color: #ff3b3b;
+        }
+
+        /* =========================
+           PROGRESS
+        ========================= */
+
+        #progressContainer {
+            position: absolute;
+
+            top: 82px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 360px;
+
+            max-width: 80%;
+
+            height: 15px;
+
+            background:
+                rgba(0,0,0,.65);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            z-index: 20;
+        }
+
+        #progressBar {
+            height: 100%;
+
+            width: 0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #00c6ff,
+                    #0072ff
+                );
+
+            transition:
+                width .2s;
+        }
+
+        /* =========================
+           LEVEL MESSAGE
+        ========================= */
+
+        #levelMessage {
+            position: absolute;
+
+            top: 35%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%)
+                scale(.7);
+
+            z-index: 40;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            text-align: center;
+
+            transition:
+                opacity .3s,
+                transform .3s;
+        }
+
+        #levelMessage.show {
+            opacity: 1;
+
+            transform:
+                translate(-50%, -50%)
+                scale(1);
+        }
+
+        #levelMessage h2 {
+            font-size: 60px;
+
+            color: #ffd000;
+
+            text-shadow:
+                0 0 25px black;
+        }
+
+        #levelMessage p {
+            font-size: 22px;
+
+            margin-top: 8px;
+
+            text-shadow:
+                0 2px 5px black;
+        }
+
+        /* =========================
+           GAME OVER
+        ========================= */
+
+        #gameOver {
+            display: none;
+
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 60;
+
+            background:
+                rgba(0,0,0,.88);
+
+            justify-content: center;
+
+            align-items: center;
+        }
+
+        .gameOverBox {
+            width: 430px;
+
+            max-width: 92%;
+
+            padding: 35px;
+
+            background: #171717;
+
+            border-radius: 20px;
+
+            text-align: center;
+
+            border: 2px solid #444;
+        }
+
+        .gameOverBox h2 {
+            font-size: 40px;
+
+            color: #ff4444;
+
+            margin-bottom: 20px;
+        }
+
+        .winTitle {
+            color: #ffd000 !important;
+        }
+
+        .result {
+            font-size: 20px;
+
+            margin: 10px;
+        }
+
+        #restartButton {
+            margin-top: 20px;
+
+            padding: 13px 35px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #2196f3;
+
+            color: white;
+
+            font-size: 18px;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        #mobileControls {
+            position: absolute;
+
+            bottom: 20px;
+
+            left: 0;
+
+            right: 0;
+
+            z-index: 30;
+
+            display: none;
+
+            justify-content:
+                space-between;
+
+            padding: 0 25px;
+        }
+
+        .mobileButton {
+            width: 70px;
+
+            height: 70px;
+
+            border-radius: 50%;
+
+            border: 2px solid white;
+
+            background:
+                rgba(0,0,0,.55);
+
+            color: white;
+
+            font-size: 28px;
+        }
+
+        @media (max-width: 700px) {
+
+            #road {
+                width: 90vw;
+            }
+
+            #mobileControls {
+                display: flex;
+            }
+
+            .hudBox {
+                min-width: 65px;
+                padding: 6px;
+            }
+
+            .hudBox strong {
+                font-size: 14px;
+            }
+
+            #progressContainer {
+                top: 72px;
+            }
+
+            #levelMessage h2 {
+                font-size: 45px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div id="gameContainer">
+
+    <!-- =========================
+         MENU
+    ========================= -->
+
+    <div id="menu">
+
+        <div class="menuBox">
+
+            <h1>
+                🏎️ ULTIMATE RACING
+            </h1>
+
+            <div class="subtitle">
+                لعبة سباق السيارات - 100 مستوى
+            </div>
+
+
+            <div class="sectionTitle">
+                اختر لون السيارة
+            </div>
+
+
+            <div class="cars">
+
+                <div
+                    class="carChoice red selected"
+                    data-color="#e53935">
+
+                    <div class="carName">
+                        🔴 أحمر
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="carChoice blue"
+                    data-color="#1976d2">
+
+                    <div class="carName">
+                        🔵 أزرق
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="carChoice black"
+                    data-color="#111111">
+
+                    <div class="carName">
+                        ⚫ أسود
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="carChoice yellow"
+                    data-color="#fbc02d">
+
+                    <div class="carName">
+                        🟡 أصفر
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="sectionTitle">
+                نوع السيارة
+            </div>
+
+
+            <select id="carType">
+
+                <option value="sport">
+                    Sport Car
+                </option>
+
+                <option value="super">
+                    Super Car
+                </option>
+
+                <option value="muscle">
+                    Muscle Car
+                </option>
+
+                <option value="formula">
+                    Formula
+                </option>
+
+                <option value="suv">
+                    SUV
+                </option>
+
+            </select>
+
+
+            <div class="sectionTitle">
+                اختر السرعة
+            </div>
+
+
+            <select id="speedMode">
+
+                <option value="slow">
+                    🐢 بطيء
+                </option>
+
+                <option value="normal" selected>
+                    🚗 عادي
+                </option>
+
+                <option value="fast">
+                    ⚡ سريع
+                </option>
+
+            </select>
+
+
+            <div class="sectionTitle">
+                مستوى البداية
+            </div>
+
+
+            <select id="startLevel">
+
+                <option value="1">
+                    المستوى 1
+                </option>
+
+                <option value="10">
+                    المستوى 10
+                </option>
+
+                <option value="25">
+                    المستوى 25
+                </option>
+
+                <option value="50">
+                    المستوى 50
+                </option>
+
+                <option value="75">
+                    المستوى 75
+                </option>
+
+                <option value="100">
+                    المستوى 100
+                </option>
+
+            </select>
+
+
+            <button id="startButton">
+                🏁 ابدأ السباق
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ROAD
+    ========================= -->
+
+    <div id="road">
+
+        <div class="roadSide left"></div>
+
+        <div class="roadSide right"></div>
+
+
+        <div id="player">
+
+            <div class="window"></div>
+
+            <div class="window2"></div>
+
+
+            <div class="wheel left top"></div>
+
+            <div class="wheel right top"></div>
+
+
+            <div class="wheel left bottom"></div>
+
+            <div class="wheel right bottom"></div>
+
+
+            <div class="light left"></div>
+
+            <div class="light right"></div>
+
+
+            <div class="backLight left"></div>
+
+            <div class="backLight right"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         HUD
+    ========================= -->
+
+    <div id="hud">
+
+        <div class="hudBox">
+
+            <span>
+                المستوى
+            </span>
+
+            <strong id="levelValue">
+                1 / 100
+            </strong>
+
+        </div>
+
+
+        <div class="hudBox">
+
+            <span>
+                السرعة
+            </span>
+
+            <strong id="speedValue">
+                0 KM/H
+            </strong>
+
+        </div>
+
+
+        <div class="hudBox">
+
+            <span>
+                النقاط
+            </span>
+
+            <strong id="scoreValue">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="hudBox">
+
+            <span>
+                الأرواح
+            </span>
+
+            <strong id="livesValue">
+                ❤️❤️❤️❤️❤️
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         PROGRESS
+    ========================= -->
+
+    <div id="progressContainer">
+
+        <div id="progressBar"></div>
+
+    </div>
+
+
+    <!-- =========================
+         LEVEL MESSAGE
+    ========================= -->
+
+    <div id="levelMessage">
+
+        <h2 id="levelMessageTitle">
+            المستوى 1
+        </h2>
+
+        <p id="levelMessageText">
+            استعد للسباق
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         MOBILE CONTROLS
+    ========================= -->
+
+    <div id="mobileControls">
+
+        <button
+            class="mobileButton"
+            id="leftButton">
+
+            ◀
+
+        </button>
+
+
+        <button
+            class="mobileButton"
+            id="rightButton">
+
+            ▶
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         GAME OVER
+    ========================= -->
+
+    <div id="gameOver">
+
+        <div class="gameOverBox">
+
+            <h2 id="gameOverTitle">
+                💥 GAME OVER
+            </h2>
+
+
+            <div class="result">
+
+                المستوى:
+
+                <strong id="finalLevel">
+                    1
+                </strong>
+
+            </div>
+
+
+            <div class="result">
+
+                النقاط:
+
+                <strong id="finalScore">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="result">
+
+                أعلى سرعة:
+
+                <strong id="finalSpeed">
+                    0
+                </strong>
+
+                KM/H
+
+            </div>
+
+
+            <button id="restartButton">
+                🔄 العودة للقائمة
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =====================================
+       ELEMENTS
+    ===================================== */
+
+    const menu =
+        document.getElementById("menu");
+
+    const startButton =
+        document.getElementById("startButton");
+
+    const road =
+        document.getElementById("road");
+
+    const player =
+        document.getElementById("player");
+
+    const speedValue =
+        document.getElementById("speedValue");
+
+    const scoreValue =
+        document.getElementById("scoreValue");
+
+    const levelValue =
+        document.getElementById("levelValue");
+
+    const livesValue =
+        document.getElementById("livesValue");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const gameOver =
+        document.getElementById("gameOver");
+
+    const gameOverTitle =
+        document.getElementById("gameOverTitle");
+
+    const finalLevel =
+        document.getElementById("finalLevel");
+
+    const finalScore =
+        document.getElementById("finalScore");
+
+    const finalSpeed =
+        document.getElementById("finalSpeed");
+
+    const restartButton =
+        document.getElementById("restartButton");
+
+    const levelMessage =
+        document.getElementById("levelMessage");
+
+    const levelMessageTitle =
+        document.getElementById(
+            "levelMessageTitle"
+        );
+
+    const levelMessageText =
+        document.getElementById(
+            "levelMessageText"
+        );
+
+    const carChoices =
+        document.querySelectorAll(
+            ".carChoice"
+        );
+
+    const carType =
+        document.getElementById(
+            "carType"
+        );
+
+    const speedMode =
+        document.getElementById(
+            "speedMode"
+        );
+
+    const startLevel =
+        document.getElementById(
+            "startLevel"
+        );
+
+
+    /* =====================================
+       GAME VARIABLES
+    ===================================== */
+
+    let selectedColor =
+        "#e53935";
+
+    let gameRunning =
+        false;
+
+    let playerX = 0;
+
+    /*
+        السرعة الحالية
+
+        تبدأ من صفر
+        ولا تبدأ بسرعة عالية
+    */
+
+    let speed = 0;
+
+    let maxSpeed = 210;
+
+    let acceleration = 0.08;
+
+    let score = 0;
+
+    /*
+        أصبح لدينا 5 أرواح
+    */
+
+    let lives = 5;
+
+    let highestSpeed = 0;
+
+    let level = 1;
+
+    let levelProgress = 0;
+
+    let enemyTimer = 0;
+
+    let roadLines = [];
+
+    let enemies = [];
+
+    let animationId = null;
+
+    let keys = {
+
+        left: false,
+
+        right: false
+
+    };
+
+
+    /* =====================================
+       CAR TYPES
+    ===================================== */
+
+    const carSettings = {
+
+        sport: {
+
+            maxSpeed: 210,
+
+            acceleration: 0.08
+
+        },
+
+        super: {
+
+            maxSpeed: 270,
+
+            acceleration: 0.10
+
+        },
+
+        muscle: {
+
+            maxSpeed: 235,
+
+            acceleration: 0.085
+
+        },
+
+        formula: {
+
+            maxSpeed: 330,
+
+            acceleration: 0.13
+
+        },
+
+        suv: {
+
+            maxSpeed: 190,
+
+            acceleration: 0.07
+
+        }
+
+    };
+
+
+    /* =====================================
+       SPEED MODES
+    ===================================== */
+
+    const speedSettings = {
+
+        slow: {
+
+            multiplier: 0.55,
+
+            acceleration: 0.045
+
+        },
+
+        normal: {
+
+            multiplier: 0.78,
+
+            acceleration: 0.075
+
+        },
+
+        fast: {
+
+            multiplier: 1,
+
+            acceleration: 0.11
+
+        }
+
+    };
+
+
+    /* =====================================
+       SELECT COLOR
+    ===================================== */
+
+    carChoices.forEach(
+        choice => {
+
+            choice.addEventListener(
+                "click",
+                () => {
+
+                    carChoices.forEach(
+                        c => {
+
+                            c.classList.remove(
+                                "selected"
+                            );
+
+                        }
+                    );
+
+
+                    choice.classList.add(
+                        "selected"
+                    );
+
+
+                    selectedColor =
+                        choice.dataset.color;
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================
+       KEYBOARD
+    ===================================== */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "ArrowLeft" ||
+                event.key.toLowerCase() === "a"
+            ) {
+
+                keys.left = true;
+
+            }
+
+
+            if (
+                event.key === "ArrowRight" ||
+                event.key.toLowerCase() === "d"
+            ) {
+
+                keys.right = true;
+
+            }
+
+
+            /*
+                زر السرعة لا يقفز
+                مباشرة إلى السرعة القصوى
+            */
+
+            if (
+                event.key === "ArrowUp" ||
+                event.key.toLowerCase() === "w"
+            ) {
+
+                speed +=
+                    acceleration * 5;
+
+            }
+
+
+            if (
+                event.key === "ArrowDown" ||
+                event.key.toLowerCase() === "s"
+            ) {
+
+                speed -= 2;
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keyup",
+        event => {
+
+            if (
+                event.key === "ArrowLeft" ||
+                event.key.toLowerCase() === "a"
+            ) {
+
+                keys.left = false;
+
+            }
+
+
+            if (
+                event.key === "ArrowRight" ||
+                event.key.toLowerCase() === "d"
+            ) {
+
+                keys.right = false;
+
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       MOBILE
+    ===================================== */
+
+    const leftButton =
+        document.getElementById(
+            "leftButton"
+        );
+
+    const rightButton =
+        document.getElementById(
+            "rightButton"
+        );
+
+
+    leftButton.addEventListener(
+        "touchstart",
+        () => {
+
+            keys.left = true;
+
+        }
+    );
+
+
+    leftButton.addEventListener(
+        "touchend",
+        () => {
+
+            keys.left = false;
+
+        }
+    );
+
+
+    rightButton.addEventListener(
+        "touchstart",
+        () => {
+
+            keys.right = true;
+
+        }
+    );
+
+
+    rightButton.addEventListener(
+        "touchend",
+        () => {
+
+            keys.right = false;
+
+        }
+    );
+
+
+    /* =====================================
+       START GAME
+    ===================================== */
+
+    startButton.addEventListener(
+        "click",
+        startGame
+    );
+
+
+    function startGame() {
+
+        const car =
+            carSettings[
+                carType.value
+            ];
+
+
+        const speedOption =
+            speedSettings[
+                speedMode.value
+            ];
+
+
+        /*
+            السرعة القصوى تعتمد
+            على السيارة + وضع السرعة
+        */
+
+        maxSpeed =
+            car.maxSpeed *
+            speedOption.multiplier;
+
+
+        /*
+            التسارع بطيء
+            في بداية اللعبة
+        */
+
+        acceleration =
+            speedOption.acceleration;
+
+
+        level =
+            Number(
+                startLevel.value
+            );
+
+
+        /*
+            تبدأ السيارة بسرعة صفر
+        */
+
+        speed = 0;
+
+
+        score = 0;
+
+
+        /*
+            خمس أرواح
+        */
+
+        lives = 5;
+
+
+        highestSpeed = 0;
+
+
+        levelProgress = 0;
+
+
+        enemyTimer = 0;
+
+
+        playerX =
+            road.clientWidth / 2 -
+            player.clientWidth / 2;
+
+
+        player.style.left =
+            playerX + "px";
+
+
+        player.style.background =
+            selectedColor;
+
+
+        enemies.forEach(
+            enemy => {
+
+                enemy.remove();
+
+            }
+        );
+
+
+        enemies = [];
+
+
+        gameRunning = true;
+
+
+        menu.style.display =
+            "none";
+
+
+        gameOver.style.display =
+            "none";
+
+
+        createRoadLines();
+
+
+        updateHUD();
+
+
+        showLevelMessage(
+            "المستوى " + level,
+            "ابدأ بهدوء واستعد للسباق"
+        );
+
+
+        cancelAnimationFrame(
+            animationId
+        );
+
+
+        animationId =
+            requestAnimationFrame(
+                gameLoop
+            );
+
+    }
+
+
+    /* =====================================
+       ROAD LINES
+    ===================================== */
+
+    function createRoadLines() {
+
+        document
+            .querySelectorAll(
+                ".dynamicLine"
+            )
+            .forEach(
+                line => {
+
+                    line.remove();
+
+                }
+            );
+
+
+        roadLines = [];
+
+
+        for (
+            let i = 0;
+            i < 12;
+            i++
+        ) {
+
+            const line =
+                document.createElement(
+                    "div"
+                );
+
+
+            line.className =
+                "laneLine dynamicLine";
+
+
+            line.style.top =
+                (i * 130 - 100) +
+                "px";
+
+
+            road.appendChild(line);
+
+
+            roadLines.push(line);
+
+
+            const line2 =
+                document.createElement(
+                    "div"
+                );
+
+
+            line2.className =
+                "laneLine right dynamicLine";
+
+
+            line2.style.top =
+                (i * 130 - 100) +
+                "px";
+
+
+            road.appendChild(line2);
+
+
+            roadLines.push(line2);
+
+        }
+
+    }
+
+
+    /* =====================================
+       DIFFICULTY
+    ===================================== */
+
+    function getSpawnRate() {
+
+        return Math.max(
+            22,
+            75 -
+            level * 0.53
+        );
+
+    }
+
+
+    function getEnemySpeed() {
+
+        return (
+            3.5 +
+            level * 0.09 +
+            speed / 25
+        );
+
+    }
+
+
+    function getTargetProgress() {
+
+        return (
+            600 +
+            level * 6
+        );
+
+    }
+
+
+    function getLevelDescription() {
+
+        if (level <= 10) {
+
+            return "بداية السباق";
+
+        }
+
+
+        if (level <= 25) {
+
+            return "السرعة بدأت بالارتفاع";
+
+        }
+
+
+        if (level <= 50) {
+
+            return "الطريق أصبح أكثر خطورة";
+
+        }
+
+
+        if (level <= 75) {
+
+            return "السيارات أصبحت أسرع";
+
+        }
+
+
+        if (level <= 90) {
+
+            return "تحدي صعب جدًا";
+
+        }
+
+
+        if (level < 100) {
+
+            return "المستويات الأخيرة";
+
+        }
+
+
+        return "المستوى النهائي";
+
+    }
+
+
+    /* =====================================
+       CREATE ENEMY
+    ===================================== */
+
+    function createEnemy() {
+
+        if (!gameRunning) {
+            return;
+        }
+
+
+        const enemy =
+            document.createElement(
+                "div"
+            );
+
+
+        enemy.className =
+            "enemy";
+
+
+        const colors = [
+
+            "#e53935",
+
+            "#1976d2",
+
+            "#111111",
+
+            "#fbc02d",
+
+            "#8e44ad",
+
+            "#16a085",
+
+            "#ff5722"
+
+        ];
+
+
+        enemy.style.background =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
+
+        const lane =
+            Math.floor(
+                Math.random() * 3
+            );
+
+
+        const laneWidth =
+            road.clientWidth / 3;
+
+
+        const x =
+            lane * laneWidth +
+            laneWidth / 2 -
+            34;
+
+
+        enemy.dataset.x =
+            x;
+
+
+        enemy.dataset.y =
+            -150;
+
+
+        enemy.style.left =
+            x + "px";
+
+
+        enemy.style.top =
+            "-150px";
+
+
+        road.appendChild(enemy);
+
+
+        enemies.push(enemy);
+
+    }
+
+
+    /* =====================================
+       COLLISION
+    ===================================== */
+
+    function checkCollision(
+        enemy
+    ) {
+
+        const playerRect =
+            player.getBoundingClientRect();
+
+
+        const enemyRect =
+            enemy.getBoundingClientRect();
+
+
+        return !(
+            playerRect.right <
+                enemyRect.left ||
+
+            playerRect.left >
+                enemyRect.right ||
+
+            playerRect.bottom <
+                enemyRect.top ||
+
+            playerRect.top >
+                enemyRect.bottom
+        );
+
+    }
+
+
+    /* =====================================
+       GAME LOOP
+    ===================================== */
+
+    function gameLoop() {
+
+        if (!gameRunning) {
+            return;
+        }
+
+
+        /* =========================
+           GRADUAL ACCELERATION
+        ========================= */
+
+        if (
+            speed <
+            maxSpeed
+        ) {
+
+            /*
+                السيارة تزيد سرعتها
+                تدريجيًا
+            */
+
+            speed +=
+                acceleration;
+
+        }
+
+
+        if (
+            speed >
+            maxSpeed
+        ) {
+
+            speed =
+                maxSpeed;
+
+        }
+
+
+        if (speed < 0) {
+
+            speed = 0;
+
+        }
+
+
+        /* =========================
+           PLAYER MOVEMENT
+        ========================= */
+
+        const moveSpeed =
+            4.5 +
+            speed / 80;
+
+
+        if (keys.left) {
+
+            playerX -=
+                moveSpeed;
+
+        }
+
+
+        if (keys.right) {
+
+            playerX +=
+                moveSpeed;
+
+        }
+
+
+        const roadWidth =
+            road.clientWidth;
+
+
+        const playerWidth =
+            player.clientWidth;
+
+
+        if (playerX < 40) {
+
+            playerX = 40;
+
+        }
+
+
+        if (
+            playerX >
+            roadWidth -
+            playerWidth -
+            40
+        ) {
+
+            playerX =
+                roadWidth -
+                playerWidth -
+                40;
+
+        }
+
+
+        player.style.left =
+            playerX + "px";
+
+
+        /* =========================
+           ROAD
+        ========================= */
+
+        const roadMovement =
+            speed / 8;
+
+
+        roadLines.forEach(
+            line => {
+
+                let y =
+                    parseFloat(
+                        line.style.top
+                    );
+
+
+                y +=
+                    roadMovement;
+
+
+                if (
+                    y >
+                    window.innerHeight
+                ) {
+
+                    y = -120;
+
+                }
+
+
+                line.style.top =
+                    y + "px";
+
+            }
+        );
+
+
+        /* =========================
+           ENEMIES
+        ========================= */
+
+        enemyTimer++;
+
+
+        if (
+            enemyTimer >
+            getSpawnRate()
+        ) {
+
+            createEnemy();
+
+            enemyTimer = 0;
+
+        }
+
+
+        enemies.forEach(
+            (enemy, index) => {
+
+                let y =
+                    parseFloat(
+                        enemy.dataset.y
+                    );
+
+
+                y +=
+                    getEnemySpeed();
+
+
+                enemy.dataset.y =
+                    y;
+
+
+                enemy.style.top =
+                    y + "px";
+
+
+                /* =================
+                   COLLISION
+                ================= */
+
+                if (
+                    checkCollision(
+                        enemy
+                    )
+                ) {
+
+                    /*
+                        خسارة روح واحدة
+                    */
+
+                    lives--;
+
+
+                    enemy.remove();
+
+
+                    enemies.splice(
+                        index,
+                        1
+                    );
+
+
+                    updateHUD();
+
+
+                    /*
+                        إذا انتهت الأرواح
+                    */
+
+                    if (
+                        lives <= 0
+                    ) {
+
+                        lives = 0;
+
+                        endGame(false);
+
+                    }
+
+                }
+
+
+                /* =================
+                   PASSED
+                ================= */
+
+                if (
+                    y >
+                    window.innerHeight +
+                    150
+                ) {
+
+                    enemy.remove();
+
+
+                    enemies.splice(
+                        index,
+                        1
+                    );
+
+
+                    score +=
+                        10 +
+                        level;
+
+
+                    levelProgress +=
+                        20 +
+                        level * .4;
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           LEVEL PROGRESS
+        ========================= */
+
+        levelProgress +=
+            speed / 350;
+
+
+        const target =
+            getTargetProgress();
+
+
+        const progress =
+            Math.min(
+                100,
+                (
+                    levelProgress /
+                    target
+                ) * 100
+            );
+
+
+        progressBar.style.width =
+            progress + "%";
+
+
+        /* =========================
+           NEXT LEVEL
+        ========================= */
+
+        if (
+            levelProgress >=
+            target
+        ) {
+
+            completeLevel();
+
+        }
+
+
+        /* =========================
+           HIGHEST SPEED
+        ========================= */
+
+        if (
+            speed >
+            highestSpeed
+        ) {
+
+            highestSpeed =
+                speed;
+
+        }
+
+
+        /* =========================
+           SCORE
+        ========================= */
+
+        score +=
+            speed / 300;
+
+
+        updateHUD();
+
+
+        animationId =
+            requestAnimationFrame(
+                gameLoop
+            );
+
+    }
+
+
+    /* =====================================
+       COMPLETE LEVEL
+    ===================================== */
+
+    function completeLevel() {
+
+        levelProgress = 0;
+
+
+        /*
+            المستوى 100
+        */
+
+        if (
+            level >= 100
+        ) {
+
+            endGame(true);
+
+            return;
+
+        }
+
+
+        level++;
+
+
+        /*
+            عند الانتقال للمستوى
+            التالي لا نقفز بالسرعة
+        */
+
+        showLevelMessage(
+            "المستوى " + level,
+            getLevelDescription()
+        );
+
+
+        /*
+            استعادة روح واحدة
+            عند الانتقال للمستوى
+            بشرط ألا تتجاوز 5
+        */
+
+        lives =
+            Math.min(
+                5,
+                lives + 1
+            );
+
+
+        updateHUD();
+
+    }
+
+
+    /* =====================================
+       LEVEL MESSAGE
+    ===================================== */
+
+    function showLevelMessage(
+        title,
+        text
+    ) {
+
+        levelMessageTitle.innerText =
+            title;
+
+
+        levelMessageText.innerText =
+            text;
+
+
+        levelMessage.classList.add(
+            "show"
+        );
+
+
+        setTimeout(
+            () => {
+
+                levelMessage.classList.remove(
+                    "show"
+                );
+
+            },
+            1500
+        );
+
+    }
+
+
+    /* =====================================
+       HUD
+    ===================================== */
+
+    function updateHUD() {
+
+        levelValue.innerText =
+            level +
+            " / 100";
+
+
+        speedValue.innerText =
+            Math.floor(
+                speed
+            ) +
+            " KM/H";
+
+
+        scoreValue.innerText =
+            Math.floor(
+                score
+            );
+
+
+        /*
+            عرض الأرواح
+        */
+
+        let hearts = "";
+
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
+
+            if (
+                i < lives
+            ) {
+
+                hearts += "❤️";
+
+            } else {
+
+                hearts += "🖤";
+
+            }
+
+        }
+
+
+        livesValue.innerText =
+            hearts;
+
+    }
+
+
+    /* =====================================
+       END GAME
+    ===================================== */
+
+    function endGame(
+        won
+    ) {
+
+        gameRunning = false;
+
+
+        cancelAnimationFrame(
+            animationId
+        );
+
+
+        finalLevel.innerText =
+            level;
+
+
+        finalScore.innerText =
+            Math.floor(
+                score
+            );
+
+
+        finalSpeed.innerText =
+            Math.floor(
+                highestSpeed
+            );
+
+
+        if (won) {
+
+            gameOverTitle.innerText =
+                "🏆 فزت باللعبة!";
+
+
+            gameOverTitle.classList.add(
+                "winTitle"
+            );
+
+        } else {
+
+            gameOverTitle.innerText =
+                "💥 خسرت جميع الأرواح";
+
+
+            gameOverTitle.classList.remove(
+                "winTitle"
+            );
+
+        }
+
+
+        gameOver.style.display =
+            "flex";
+
+    }
+
+
+    /* =====================================
+       RESTART
+    ===================================== */
+
+    restartButton.addEventListener(
+        "click",
+        () => {
+
+            gameOver.style.display =
+                "none";
+
+
+            menu.style.display =
+                "flex";
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
+
